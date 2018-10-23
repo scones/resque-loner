@@ -1,0 +1,30 @@
+{
+    "name": "scones/resque-loner",
+    "description": "resque-loner is a plugin for scones/resque to make your jobs unique.",
+    "type": "library",
+    "homepage": "https://github.com/scones/resque-loner",
+    "license": "MIT",
+    "keywords": ["psr-12", "resque", "queue", "tasks", "task queue", "message queue", "unique jobs"],
+    "authors": [
+        {
+            "name": "Dirk Gustke",
+            "email": "code+resque@asm68k.org",
+            "homepage": "https://github.com/scones"
+        }
+    ],
+    "require": {
+        "php": "~7.2",
+        "scones/resque": "*@stable"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "ResqueLogger\\": "src/"
+        }
+    },
+    "platform": {
+        "php": "~7.2"
+    }
+}
