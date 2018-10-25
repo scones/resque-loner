@@ -73,6 +73,49 @@ class ResqueLonerTest extends TestCase
         $this->resqueLoner->register();
     }
 
+    public function testLockShouldAddSkipQueueWhenThereIsAJobQueued()
+    {
+        $queueName = 'some_queue';
+        $payload = ['some' => 'data', 'queue_name' => $queueName];
+        $id = '9335956c65f0bb85732d0f4ce6ab5650';
+        $this->datastore->expects($this->once())
+            ->method('isLonerQueued')
+            ->with($queueName, $id)
+            ->willReturn(true)
+        ;
+
+        $this->datastore->expects($this->never())->method('markLonerAsQueued');
+
+        $this->datastore->expects($this->once())
+            ->method('markLonerAsUnqueued')
+            ->with($queueName, $id)
+        ;
+
+        $beforeTask = new BeforeEnqueue();
+        $beforeTask->setPayload($payload);
+
+        $this->listenerProvider->expects($this->at(0))
+            ->method('addListener')
+            ->with($this->callback(function ($callback) use ($beforeTask) {
+                $callback($beforeTask);
+                return true;
+            }))
+        ;
+
+        $afterTask = new AfterEnqueue();
+        $afterTask->setPayload($payload);
+
+        $this->listenerProvider->expects($this->at(1))
+            ->method('addListener')
+            ->with($this->callback(function ($callback) use ($afterTask) {
+                $callback($afterTask);
+                return true;
+            }))
+        ;
+
+        $this->resqueLoner->register();
+    }
+
     public function buildDatastoreMock()
     {
         return $this->getMockBuilder(DataStore::class)
